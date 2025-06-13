@@ -1,50 +1,92 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/core";
+import { useEffect, useState } from "react";
 import "./App.css";
+import { ThemeProvider } from "./components/theme-provider";
+import { Button, buttonVariants } from "./components/ui/button";
+import { path } from "@tauri-apps/api";
+import { BaseDirectory, create, exists } from "@tauri-apps/plugin-fs";
+import { open } from "@tauri-apps/plugin-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { cn } from "./lib/utils";
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+  const [selectedPath, setSelectedPath] = useState("");
+  const [fullPath, setFullPath] = useState("");
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
-  }
+  const gameName = "eljuego";
+
+  useEffect(() => {
+    const getPath = async () => {
+      const basePath = await path.documentDir();
+      setFullPath(await path.join(basePath, "carpeta"));
+      console.log(fullPath);
+    };
+
+    getPath();
+  }, []);
+
+  const selectFile = async () => {
+    const file = await open({
+      multiple: false,
+      directory: true,
+    });
+
+    if (file) setSelectedPath(file);
+  };
+
+  const handleClick = async () => {
+    const fileName = "pruebas.txt";
+    const existsFile = await exists(fileName, {
+      baseDir: BaseDirectory.AppData,
+    });
+
+    if (!existsFile) {
+      await create(fileName, { baseDir: BaseDirectory.AppData });
+    }
+  };
 
   return (
-    <main className="container">
-      <h1>Welcome to Tauri + React</h1>
-
-      <div className="row">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
-
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg}</p>
-    </main>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <main className="min-h-svh w-full flex items-center justify-center gap-4">
+        <Dialog>
+          <DialogTrigger className={cn(buttonVariants())}>
+            Install
+          </DialogTrigger>
+          <DialogContent className="bg-zinc-900">
+            <DialogHeader>
+              <DialogTitle className="uppercase text-center text-sm">
+                Choose install location
+              </DialogTitle>
+            </DialogHeader>
+            <div className="mt-2">
+              <p className="text-foreground/75 font-normal">Folder</p>
+              <div className="flex gap-2 mt-1">
+                <p className="w-full text-sm border-2 border-neutral-500 rounded-md px-4 py-2">
+                  {selectedPath ? selectedPath : fullPath}
+                </p>
+                <Button
+                  variant={"ghost"}
+                  size={"sm"}
+                  className="px-6 hover:bg-neutral-300! hover:text-black transition-colors duration-[400ms]"
+                  onClick={selectFile}
+                >
+                  Browse
+                </Button>
+              </div>
+              <p className="text-xs text-foreground/75 mt-4">
+                Path: {selectedPath ? selectedPath : fullPath}\{gameName}
+              </p>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </main>
+    </ThemeProvider>
   );
 }
 
