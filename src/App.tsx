@@ -15,6 +15,8 @@ import {
 import { cn } from "./lib/utils";
 import { download } from "@tauri-apps/plugin-upload";
 import { Progress } from "./components/ui/progress";
+import { ArrowDown } from "lucide-react";
+import { motion } from "motion/react";
 
 type statusTypes =
   | "PENDING"
@@ -76,7 +78,7 @@ function App() {
 
     setStatus("PENDING");
     download(
-      "http://localhost:3000/api/videogame",
+      "http://192.168.1.139:3000/api/videogame",
       finalArchive,
       ({ progress, total }) => {
         if (totalSize === 0) setTotalSize(total);
@@ -131,11 +133,40 @@ function App() {
           </DialogContent>
         </Dialog>
         {status === "PENDING" && (
-          <Progress
-            value={progress}
-            className="w-1/2 bg-gradient-to-r from-orange-400 to-green-500"
-          />
+          <Progress value={progress} className="w-1/2" />
         )}
+        <button className="bg-yellow-300 flex justify-between items-center gap-4 pl-3 pr-6 py-3 rounded-full">
+          <div className="bg-black size-8 rounded-full relative overflow-hidden">
+            {/* <ArrowDown
+              className="text-yellow-300 absolute left-1/2 top-1/2 transform -translate-1/2"
+              size={17}
+              strokeWidth={5}
+            />
+            <ArrowDown
+              className="text-yellow-300 absolute left-1/2 top-[-100%] transform -translate-x-1/2"
+              size={17}
+              strokeWidth={5}
+              style={{ animationDelay: "0.5s" }}
+            /> */}
+            <motion.div
+              className="absolute left-1/2 top-1/2 text-yellow-300 -translate-1/2"
+              animate={{
+                y: ["-150%", "15%", "0", "0", "-15%", "150%"],
+                opacity: 1,
+              }}
+              transition={{
+                duration: 1.6,
+                times: [0, 0.3, 0.5, 1.1, 1.2, 1.5],
+                ease: "linear",
+                repeat: Infinity,
+                repeatDelay: 0.5,
+              }}
+            >
+              <ArrowDown size={17} strokeWidth={5} />
+            </motion.div>
+          </div>
+          <p className="text-black text-xl font-bold">Actualizar juego</p>
+        </button>
       </main>
     </ThemeProvider>
   );
