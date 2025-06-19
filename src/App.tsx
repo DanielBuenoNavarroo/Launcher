@@ -35,6 +35,7 @@ function App() {
   const [status, setStatus] = useState<statusTypes>("READY_TO_INSTALL");
   const [totalSize, setTotalSize] = useState(0);
   const [progress, setProgres] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
 
   const gameName = "eljuego";
 
@@ -135,37 +136,42 @@ function App() {
         {status === "PENDING" && (
           <Progress value={progress} className="w-1/2" />
         )}
-        <button className="bg-yellow-300 flex justify-between items-center gap-4 pl-3 pr-6 py-3 rounded-full">
-          <div className="bg-black size-8 rounded-full relative overflow-hidden">
-            {/* <ArrowDown
-              className="text-yellow-300 absolute left-1/2 top-1/2 transform -translate-1/2"
-              size={17}
-              strokeWidth={5}
-            />
-            <ArrowDown
-              className="text-yellow-300 absolute left-1/2 top-[-100%] transform -translate-x-1/2"
-              size={17}
-              strokeWidth={5}
-              style={{ animationDelay: "0.5s" }}
-            /> */}
+        <button
+          className="bg-yellow-300 hover:bg-neutral-800 flex justify-between items-center gap-4 pl-3 pr-6 py-3 rounded-full cursor-pointer! transition-colors duration-300 text-black hover:text-yellow-300"
+          onMouseEnter={() => {
+            setIsHovered(true);
+          }}
+          onMouseLeave={() => {
+            setIsHovered(false);
+          }}
+        >
+          <div
+            className={cn(
+              "size-8 rounded-full relative overflow-hidden",
+              isHovered ? "bg-yellow-300" : "bg-black"
+            )}
+          >
             <motion.div
-              className="absolute left-1/2 top-1/2 text-yellow-300 -translate-1/2"
+              className={cn(
+                "absolute left-1/2 top-1/2 -translate-1/2",
+                isHovered ? "text-neutral-800" : "text-yellow-300 "
+              )}
               animate={{
                 y: ["-150%", "15%", "0", "0", "-15%", "150%"],
                 opacity: 1,
               }}
               transition={{
-                duration: 1.6,
-                times: [0, 0.3, 0.5, 1.1, 1.2, 1.5],
-                ease: "linear",
+                duration: 2,
+                times: [0, 0.1, 0.2, 0.7, 0.8, 1],
+                ease: "easeInOut",
                 repeat: Infinity,
-                repeatDelay: 0.5,
+                repeatDelay: 0.1,
               }}
             >
               <ArrowDown size={17} strokeWidth={5} />
             </motion.div>
           </div>
-          <p className="text-black text-xl font-bold">Actualizar juego</p>
+          <p className="text-xl font-bold">Actualizar juego</p>
         </button>
       </main>
     </ThemeProvider>
