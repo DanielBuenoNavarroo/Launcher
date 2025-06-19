@@ -10,7 +10,7 @@ const AnimatedDownloadIcon = ({ isHovered }: Props) => {
   return (
     <div
       className={cn(
-        "size-8 rounded-full relative overflow-hidden",
+        "size-8 min-w-8 rounded-full relative overflow-hidden",
         isHovered ? "bg-yellow-300" : "bg-black"
       )}
     >

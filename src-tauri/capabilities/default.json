@@ -2,11 +2,11 @@
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
   "description": "Capability for the main window",
-  "windows": [
-    "main"
-  ],
+  "windows": ["main"],
   "permissions": [
     "core:default",
+    "core:window:default",
+    "core:window:allow-start-dragging",
     "dialog:default",
     "fs:default",
     "fs:allow-create",
@@ -21,6 +21,8 @@
     "fs:allow-size",
     "fs:allow-write",
     "opener:default",
+    "store:default",
+    "upload:default",
     {
       "identifier": "fs:allow-mkdir",
       "allow": [
@@ -36,8 +38,6 @@
           "path": "$DOCUMENT/**"
         }
       ]
-    },
-    "upload:default",
-    "store:default"
+    }
   ]
 }

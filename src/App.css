@@ -115,6 +115,8 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground rounded-md;
+    background: linear-gradient(90deg, #03a9f4, #f441a5);
+    padding: 2px;
   }
 }
