@@ -1,7 +1,7 @@
 import "./App.css";
 import { useEffect, useState } from "react";
 import { ThemeProvider } from "./components/theme-provider";
-import { Button, buttonVariants } from "./components/ui/button";
+import { Button } from "./components/ui/button";
 import { path } from "@tauri-apps/api";
 import { exists, mkdir } from "@tauri-apps/plugin-fs";
 import { open } from "@tauri-apps/plugin-dialog";
@@ -19,8 +19,11 @@ import AnimatedDownloadIcon from "./components/animated-download";
 import { AlignJustify, Cog, Minus, X } from "lucide-react";
 import {
   DropdownMenu,
+  DropdownMenuContent,
   DropdownMenuTrigger,
 } from "./components/ui/dropdown-menu";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import GameSettings from "./components/game-settings";
 
 type statusTypes =
   | "PENDING"
@@ -41,6 +44,8 @@ function App() {
   const [progress, setProgres] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [hoverMenu, setHoverMenu] = useState(false);
+
+  const [gameSettingsOpen, setGameSettingsOpen] = useState(false);
 
   const gameName = "eljuego";
 
@@ -83,6 +88,7 @@ function App() {
     let totalDownloaded = 0;
 
     setStatus("PENDING");
+
     download(
       "http://192.168.1.139:3000/api/videogame",
       finalArchive,
@@ -109,13 +115,25 @@ function App() {
         data-tauri-drag-region
         className="w-full fixed rounded-t-md flex justify-end py-2 gap-4 px-4 z-50"
       >
-        <button className="bg-transparent hover:bg-black/20 dark:hover:bg-white/20 p-1 rounded-md text-white">
+        <button className="bg-transparent hover:bg-black/30 p-1 rounded-md text-white">
           <Cog size={20} />
         </button>
-        <button className="bg-transparent hover:bg-black/20 dark:hover:bg-white/20 p-1 rounded-md text-white">
+        <button
+          className="bg-transparent hover:bg-black/30 p-1 rounded-md text-white"
+          onClick={() => {
+            const currentWindow = getCurrentWindow();
+            currentWindow.minimize();
+          }}
+        >
           <Minus size={20} />
         </button>
-        <button className="bg-transparent hover:bg-black/20 dark:hover:bg-white/20 p-1 rounded-md text-white">
+        <button
+          className="bg-transparent hover:bg-red-500/80 p-1 rounded-md text-white"
+          onClick={() => {
+            const currentWindow = getCurrentWindow();
+            currentWindow.close();
+          }}
+        >
           <X size={20} />
         </button>
       </div>
@@ -124,7 +142,11 @@ function App() {
           <Progress value={progress} className="w-1/2" />
         )}
         <div className="absolute bottom-14 right-16 flex gap-2">
-          <Dialog open={isOpen} onOpenChange={() => setIsOpen((open) => !open)} modal={false}>
+          <Dialog
+            open={isOpen}
+            onOpenChange={() => setIsOpen((open) => !open)}
+            modal={false}
+          >
             <DialogTrigger asChild>
               <button
                 className="min-w-56! bg-yellow-300 hover:bg-neutral-900 flex justify-between items-center gap-4 pl-3 pr-6 py-3 rounded-full cursor-pointer! transition-colors duration-200 text-black hover:text-yellow-300"
@@ -174,19 +196,32 @@ function App() {
           <DropdownMenu
             open={hoverMenu}
             onOpenChange={() => setHoverMenu((open) => !open)}
+            modal={false}
           >
             <DropdownMenuTrigger
               className={cn(
                 "rounded-full p-3 size-14 flex items-center justify-center transition-colors duration-200",
-                isHovered
+                hoverMenu
                   ? "bg-neutral-800 text-neutral-200"
                   : "bg-neutral-700 text-neutral-400"
               )}
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
             >
               <AlignJustify className="" strokeWidth={2.5} />
             </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              side="top"
+              className="mb-3 bg-neutral-800 space-y-2"
+              onMouseLeave={() => setHoverMenu(false)}
+            >
+              <GameSettings
+                isOpen={gameSettingsOpen}
+                setIsOpen={setGameSettingsOpen}
+              />
+              <div className="p-2 hover:bg-neutral-400/20 rounded-sm text-sm cursor-default">
+                Buscar actualizaciones
+              </div>
+            </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </main>
