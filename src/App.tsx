@@ -24,6 +24,7 @@ import {
 } from "./components/ui/dropdown-menu";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import GameSettings from "./components/game-settings";
+import SettingsDialog from "./components/settigns-dialog";
 
 type statusTypes =
   | "PENDING"
@@ -113,11 +114,9 @@ function App() {
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <div
         data-tauri-drag-region
-        className="w-full fixed rounded-t-md flex justify-end py-2 gap-4 px-4 z-50"
+        className="w-full fixed rounded-t-md flex justify-end py-2 gap-4 px-4 z-50 top-0 right-0"
       >
-        <button className="bg-transparent hover:bg-black/30 p-1 rounded-md text-white">
-          <Cog size={20} />
-        </button>
+        <SettingsDialog />
         <button
           className="bg-transparent hover:bg-black/30 p-1 rounded-md text-white"
           onClick={() => {
@@ -158,7 +157,7 @@ function App() {
                 }}
               >
                 <AnimatedDownloadIcon isHovered={isHovered} />
-                <p className="w-full text-xl font-bold text-center">
+                <p className="w-full text-xl font-bold text-center select-none">
                   {status === "READY" && "Jugar"}
                   {status === "READY_TO_INSTALL" && "Instalar juego"}
                   {status === "PENDING" && "Iniciando descarga"}
@@ -214,10 +213,13 @@ function App() {
               className="mb-3 bg-neutral-800 space-y-2"
               onMouseLeave={() => setHoverMenu(false)}
             >
-              <GameSettings
+              <div className="w-full text-left p-2 hover:bg-neutral-400/20 rounded-sm text-sm cursor-default">
+                Ajustes del juego
+              </div>
+              {/* <GameSettings
                 isOpen={gameSettingsOpen}
                 setIsOpen={setGameSettingsOpen}
-              />
+              /> */}
               <div className="p-2 hover:bg-neutral-400/20 rounded-sm text-sm cursor-default">
                 Buscar actualizaciones
               </div>
