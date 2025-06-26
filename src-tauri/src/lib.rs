@@ -1,12 +1,11 @@
 mod common;
-mod setup;
+
+use crate::common::MAIN_WINDOW_LABEL;
 
 use lazy_static::lazy_static;
 use std::fs;
 use std::sync::Mutex;
-use tauri::{AppHandle, Manager, PhysicalPosition, Runtime, WebviewWindow};
-
-use crate::common::MAIN_WINDOW_LABEL;
+use tauri::{AppHandle, Emitter, Manager, PhysicalPosition, Runtime, WebviewWindow};
 
 lazy_static! {
     static ref PREVIOUS_MONITOR_NAME: Mutex<Option<String>> = Mutex::new(None);
@@ -18,24 +17,38 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
-async fn change_window_height(handle: AppHandle, height: u32) {
-    let window: WebviewWindow = handle.get_webview_window(MAIN_WINDOW_LABEL).unwrap();
-
-    let mut size = window.outer_size().unwrap();
-    size.height = height;
-    window.set_size(size).unwrap();
-}
-
-#[tauri::command]
 async fn create_dir() -> Result<(), String> {
     fs::File::create("prueba.txt").expect("Error al crear el archivo");
     Ok(())
 }
 
-fn move_window_to_active_monitor<R: Runtime>(window: &WebviewWindow) {
-    dbg!("Moving window to active monitor");
+#[tauri::command]
+async fn show_launcher<R: Runtime>(app_handle: AppHandle<R>) {
+    if let Some(window) = app_handle.get_webview_window(MAIN_WINDOW_LABEL) {
+        move_window_to_active_monitor(&window);
 
-    //Try to get the available monitor, handle filure gracefully
+        let _ = window.show();
+        let _ = window.unminimize();
+        let _ = window.set_focus();
+
+        let _ = app_handle.emit("show-coco", ());
+    }
+}
+
+#[tauri::command]
+async fn hide_launcher<R: Runtime>(app: AppHandle<R>) {
+    if let Some(window) = app.get_webview_window(MAIN_WINDOW_LABEL) {
+        if let Err(err) = window.hide() {
+            log::error!("Failed to hide the window: {}", err);
+        } else {
+            log::debug!("Window successfully hidden.");
+        }
+    } else {
+        log::error!("Main window not found.");
+    }
+}
+
+fn move_window_to_active_monitor<R: Runtime>(window: &WebviewWindow<R>) {
     let available_monitors = match window.available_monitors() {
         Ok(monitors) => monitors,
         Err(e) => {
@@ -44,7 +57,6 @@ fn move_window_to_active_monitor<R: Runtime>(window: &WebviewWindow) {
         }
     };
 
-    // Attempt to get the cursor position, handle failure gracefully
     let cursor_position = match window.cursor_position() {
         Ok(pos) => Some(pos),
         Err(e) => {
@@ -53,13 +65,10 @@ fn move_window_to_active_monitor<R: Runtime>(window: &WebviewWindow) {
         }
     };
 
-    // Find the monitor that contains the cursor or default to the primary monitor
     let target_monitor = if let Some(cursor_position) = cursor_position {
-        // Convert cursor position to integers
         let cursor_x = cursor_position.x.round() as i32;
         let cursor_y = cursor_position.y.round() as i32;
 
-        // Find the monitor that contains the cursor
         available_monitors.into_iter().find(|monitor| {
             let monitor_position = monitor.position();
             let monitor_size = monitor.size();
@@ -73,7 +82,6 @@ fn move_window_to_active_monitor<R: Runtime>(window: &WebviewWindow) {
         None
     };
 
-    // Use the target monitor or default to the primary monitor
     let monitor = match target_monitor.or_else(|| window.primary_monitor().ok().flatten()) {
         Some(monitor) => monitor,
         None => {
@@ -109,11 +117,9 @@ fn move_window_to_active_monitor<R: Runtime>(window: &WebviewWindow) {
     let window_width = window_size.width as i32;
     let window_height = window_size.height as i32;
 
-    // Calculate the new position to center the window on the monitor
     let window_x = monitor_position.x + (monitor_size.width as i32 - window_width) / 2;
     let window_y = monitor_position.y + (monitor_size.height as i32 - window_height) / 2;
 
-    // Move the window to the new position
     if let Err(e) = window.set_position(PhysicalPosition::new(window_x, window_y)) {
         log::error!("Failed to move window: {}", e);
     }
@@ -136,8 +142,9 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .invoke_handler(tauri::generate_handler![
             greet,
-            change_window_height,
-            create_dir
+            create_dir,
+            show_launcher,
+            hide_launcher
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

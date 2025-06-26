@@ -1,0 +1,30 @@
+{
+  "GAME_SETTINGS": {
+    "TITLE": "Settings",
+    "GENERAL": {
+      "LABEL": "General",
+      "CLIENT_LANGUAGE": "Client Language",
+      "SELECT_LANGUAGE": "Select Language",
+      "CLOSE_SETTINGS": "Close Settings",
+      "CLOSE_WINDOW": "Close Window",
+      "MINIMIZE_WINDOW": "Minimize to Tray",
+      "RECOMENDED": "Recomended",
+      "EXIT_LAUNCHER": "Exit Launcher",
+      "LAUNCHER_UPDATE": "Launcher Update",
+      "ALLOW_SILENT_UPDATES": "Allow Silent Updates",
+      "ALLOW_SILENT_UPDATES_TEXT": "Allow CompanyName to download launcher update packages automatically, then notify you to install them after the download is complete."
+    },
+    "DOWNLOAD": {
+      "LABEL": "Download"
+    },
+    "NOTIFICATIONS": {
+      "LABEL": "Notifications"
+    },
+    "TOOLS": {
+      "LABEL": "Tools"
+    },
+    "ABOUT": {
+      "LABEL": "About"
+    }
+  }
+}

@@ -12,5 +12,13 @@ const saveData = async (
 
 const getData = async (storeName: string = "default", key: string) => {
   const store = await load(storeName);
-  await store.get(key);
+  const data = await store.get<any>(key);
+  return data.value;
 };
+
+const deleteData = async (storeName: string = "default", key: string) => {
+  const store = await load(storeName);
+  await store.delete(key);
+};
+
+export { saveData, getData, deleteData };

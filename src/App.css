@@ -118,5 +118,24 @@
     @apply bg-background text-foreground rounded-md min-h-screen relative;
     background: linear-gradient(90deg, #03a9f4, #f441a5);
     padding: 2px;
+    scroll-behavior: smooth;
   }
+}
+
+.scrollbar-container::-webkit-scrollbar {
+  width: 13px;
+}
+
+.scrollbar-container::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  border: 4px solid transparent;
+  background-clip: content-box;
+
+  background-color: transparent;
+
+  transition: background-color 0.3s ease;
+}
+
+.scrollbar-container:hover::-webkit-scrollbar-thumb {
+  background-color: #404040;
 }

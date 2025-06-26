@@ -1,0 +1,28 @@
+{
+  "GAME_SETTINGS": {
+    "TITLE": "Ajustes",
+    "GENERAL": {
+      "LABEL": "General",
+      "CLIENT_LANGUAGE": "Idioma del cliente",
+      "SELECT_LANGUAGE": "Selección de idioma",
+      "CLOSE_SETTINGS": "Ajustes de cierre",
+      "CLOSE_WINDOW": "Cerrar ventana",
+      "EXIT_LAUNCHER": "Salir del lanzador",
+      "LAUNCHER_UPDATE": "Actualización del lanzador",
+      "ALLOW_SILENT_UPDATES": "Permitir actualización en segundo plano",
+      "ALLOW_SILENT_UPDATES_TEXT": "Permitir que CompanyName descargue automáticamente el paquete de actualización del lanzador y me notifique cuando se tenga que realizar la instalación."
+    },
+    "DOWNLOAD": {
+      "LABEL": "Descargas"
+    },
+    "NOTIFICATIONS": {
+      "LABEL": "Avisos"
+    },
+    "TOOLS": {
+      "LABEL": "Herramientas"
+    },
+    "ABOUT": {
+      "LABEL": "Acerca de"
+    }
+  }
+}
