@@ -55,6 +55,14 @@ export const useTray = (active: boolean) => {
           currentWindow.close();
         },
       }),
+      PredefinedMenuItem.new({ item: "Separator" }),
+      MenuItem.new({
+        text: "Quit",
+        action: () => {
+          const currentWindow = getCurrentWindow();
+          currentWindow.close();
+        },
+      }),
     ]);
 
     return Menu.new({ items });
