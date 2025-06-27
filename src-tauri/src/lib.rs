@@ -135,6 +135,7 @@ fn move_window_to_active_monitor<R: Runtime>(window: &WebviewWindow<R>) {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_upload::init())
         .plugin(tauri_plugin_dialog::init())

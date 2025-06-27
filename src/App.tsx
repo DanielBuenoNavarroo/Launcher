@@ -16,18 +16,20 @@ import { cn } from "./lib/utils";
 import { download } from "@tauri-apps/plugin-upload";
 import { Progress } from "./components/ui/progress";
 import AnimatedDownloadIcon from "./components/animated-download";
-import { AlignJustify, Minus, X } from "lucide-react";
+import { AlignJustify } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "./components/ui/dropdown-menu";
-import { getCurrentWindow } from "@tauri-apps/api/window";
-import SettingsDialog from "./components/settigns-dialog";
-import { hideLauncher } from "./commands";
 import { useTray } from "./hooks/useTray";
 import { getData } from "./lib/store";
-import { SETTINGS_STORE, TRAY_ACTIVE_KEY } from "./constants/store";
+import {
+  ALLOW_SILENT_UPDATES_KEY,
+  SETTINGS_STORE,
+  TRAY_ACTIVE_KEY,
+} from "./constants/store";
+import TopBar from "./components/top-bar";
 
 type statusTypes =
   | "PENDING"
@@ -48,7 +50,9 @@ function App() {
   const [progress, setProgres] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [hoverMenu, setHoverMenu] = useState(false);
+
   const [trayActive, setTrayActive] = useState(false);
+  const [allowSilentUpdates, setAllowSilentUpdates] = useState(false);
 
   const gameName = "eljuego";
 
@@ -60,7 +64,16 @@ function App() {
       setTrayActive(tray === "0");
     };
 
+    const getAllowSilentUpdates = async () => {
+      const allowSilentUpdates = await getData(
+        SETTINGS_STORE,
+        ALLOW_SILENT_UPDATES_KEY
+      );
+      setAllowSilentUpdates(allowSilentUpdates === "1");
+    };
+
     getTrayActive();
+    getAllowSilentUpdates();
   }, []);
 
   useEffect(() => {
@@ -126,34 +139,12 @@ function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <Suspense fallback={<div>Loading...</div>}>
-        <div
-          data-tauri-drag-region
-          className="w-full fixed rounded-t-md flex justify-end py-2 gap-4 px-4 z-50 top-0 right-0"
-        >
-          <SettingsDialog
-            trayActive={trayActive}
-            setTrayActive={setTrayActive}
-          />
-          <button
-            className="bg-transparent hover:bg-black/30 p-1 rounded-md text-white"
-            onClick={() => {
-              const currentWindow = getCurrentWindow();
-              currentWindow.minimize();
-            }}
-          >
-            <Minus size={20} />
-          </button>
-          <button
-            className="bg-transparent hover:bg-red-500/80 p-1 rounded-md text-white"
-            onClick={() => {
-              const currentWindow = getCurrentWindow();
-              // currentWindow.close();
-              hideLauncher();
-            }}
-          >
-            <X size={20} />
-          </button>
-        </div>
+        <TopBar
+          trayActive={trayActive}
+          setTrayActive={setTrayActive}
+          allowSilentUpdates={allowSilentUpdates}
+          setAllowSilentUpdates={setAllowSilentUpdates}
+        />
         <main className="h-full w-full flex flex-col items-center justify-center gap-4">
           {status === "PENDING" && (
             <Progress value={progress} className="w-1/2" />
@@ -234,10 +225,6 @@ function App() {
                 <div className="w-full text-left p-2 hover:bg-neutral-400/20 rounded-sm text-sm cursor-default">
                   Ajustes del juego
                 </div>
-                {/* <GameSettings
-                isOpen={gameSettingsOpen}
-                setIsOpen={setGameSettingsOpen}
-              /> */}
                 <div className="p-2 hover:bg-neutral-400/20 rounded-sm text-sm cursor-default">
                   Buscar actualizaciones
                 </div>

@@ -20,7 +20,11 @@ import { useTranslation } from "react-i18next";
 import { Switch } from "./ui/switch";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { saveData } from "@/lib/store";
-import { SETTINGS_STORE, TRAY_ACTIVE_KEY } from "@/constants/store";
+import {
+  ALLOW_SILENT_UPDATES_KEY,
+  SETTINGS_STORE,
+  TRAY_ACTIVE_KEY,
+} from "@/constants/store";
 
 type SettingsTabs =
   | "General"
@@ -49,9 +53,16 @@ type LanguagesISO = (typeof langs)[number]["iso"];
 type Props = {
   trayActive: boolean;
   setTrayActive: (active: boolean) => void;
+  allowSilentUpdates: boolean;
+  setAllowSilentUpdates: (allow: boolean) => void;
 };
 
-const SettingsDialog = ({ trayActive, setTrayActive }: Props) => {
+const SettingsDialog = ({
+  trayActive,
+  setTrayActive,
+  allowSilentUpdates,
+  setAllowSilentUpdates,
+}: Props) => {
   const { t, i18n } = useTranslation();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -111,8 +122,10 @@ const SettingsDialog = ({ trayActive, setTrayActive }: Props) => {
           <div className="bg-neutral-800 col-span-7 rounded-r-xl pl-8 pt-8 pb-2 select-none">
             {currentTab === "General" && (
               <>
-                <h1 className="text-lg mb-5">{t("GAME_SETTINGS.GENERAL.LABEL")}</h1>
-                <div className="max-h-[385px] overflow-y-auto pr-8 pb-2 scrollbar-container">
+                <h1 className="text-lg mb-5">
+                  {t("GAME_SETTINGS.GENERAL.LABEL")}
+                </h1>
+                <div className="max-h-[385px] overflow-y-auto pr-8 pb-4 scrollbar-container">
                   <div className="space-y-2">
                     <p className="text-sm text-neutral-400">
                       {t("GAME_SETTINGS.GENERAL.CLIENT_LANGUAGE")}
@@ -213,23 +226,18 @@ const SettingsDialog = ({ trayActive, setTrayActive }: Props) => {
                           {t("GAME_SETTINGS.GENERAL.ALLOW_SILENT_UPDATES_TEXT")}
                         </p>
                       </div>
-                      <Switch className="outline-2 outline-neutral-500 hover:data-[state=unchecked]:outline-neutral-400 data-[state=checked]:outline-green-300/75" />
-                    </div>
-                  </div>
-                  <div className="space-y-2 mt-5">
-                    <p className="text-sm text-neutral-400">
-                      {t("GAME_SETTINGS.GENERAL.LAUNCHER_UPDATE")}
-                    </p>
-                    <div className="bg-neutral-700/60 w-full p-4 rounded-md flex items-center gap-4">
-                      <div className="space-y-1">
-                        <p className="text-sm">
-                          {t("GAME_SETTINGS.GENERAL.ALLOW_SILENT_UPDATES")}
-                        </p>
-                        <p className="text-xs text-neutral-400">
-                          {t("GAME_SETTINGS.GENERAL.ALLOW_SILENT_UPDATES_TEXT")}
-                        </p>
-                      </div>
-                      <Switch className="outline-2 outline-neutral-500 hover:data-[state=unchecked]:outline-neutral-400 data-[state=checked]:outline-green-300/75" />
+                      <Switch
+                        checked={allowSilentUpdates}
+                        onCheckedChange={(val: boolean) => {
+                          setAllowSilentUpdates(val);
+                          saveData(
+                            SETTINGS_STORE,
+                            ALLOW_SILENT_UPDATES_KEY,
+                            val ? "1" : "0"
+                          );
+                        }}
+                        className="outline-2 outline-neutral-500 hover:data-[state=unchecked]:outline-neutral-400 data-[state=checked]:outline-green-300/75"
+                      />
                     </div>
                   </div>
                 </div>
